@@ -80,10 +80,10 @@ model SubAccount {
   agencyId         String
   ghlLocationId    String
   name             String
-  contactEmail     String? - personal
-  busniessEmail        
-  personalInfos        Object{all personal information}
-   busniessInfos        Object{all  busniess information}
+  contactEmail     String?
+  businessEmail    String?
+  personalInfos    Json?
+  businessInfos    Json?
   status           SubAccountStatus @default(PENDING)
   rejectionComment String?
   requestedAt      DateTime         @default(now())

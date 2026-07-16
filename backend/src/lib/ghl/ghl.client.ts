@@ -1,4 +1,4 @@
-﻿import { badGateway, unauthorized } from "../../utils/appError";
+import { badGateway, unauthorized } from "../../utils/appError";
 import { env } from "../../utils/envConfig";
 
 /**
@@ -64,6 +64,7 @@ export interface GhlUser {
     role?: string; // "admin" | "user"
     locationIds?: string[];
   };
+  isAgencyOwner?: boolean;
 }
 
 interface GhlRequestOptions {

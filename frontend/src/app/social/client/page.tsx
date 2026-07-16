@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { format, formatDistanceToNow } from "date-fns"
 import {
@@ -16,6 +16,7 @@ import {
 import { useMemo, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { AuthGuard } from "@/components/auth/AuthGuard"
+import { ForcePasswordModal } from "@/components/auth/ForcePasswordModal"
 import { AppShell } from "@/components/layouts/AppShell"
 import { Lightbox } from "@/components/social/Lightbox"
 import {
@@ -611,6 +612,7 @@ export default function Page() {
   return (
     <AuthGuard allowedRoles={["SUB_ACCOUNT"]} redirectTo="/social">
       <ClientApprovalGrid />
+      <ForcePasswordModal />
     </AuthGuard>
   )
 }

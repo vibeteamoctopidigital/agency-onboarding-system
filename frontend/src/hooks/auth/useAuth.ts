@@ -1,6 +1,6 @@
-﻿"use client"
+"use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect } from "react"
 import { toast } from "@/lib/toast"
@@ -27,6 +27,7 @@ export function homeRouteFor(role: UserRole): string {
 export function useAuth() {
   const dispatch = useAppDispatch()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { user, isAuthenticated, isLoading } = useAppSelector((state) => state.auth)
 
   const token = typeof window !== "undefined" ? tokenStorage.getAccessToken() : undefined
@@ -175,8 +176,11 @@ export function useAuth() {
     async (newPassword: string) => {
       await AuthService.firstLoginPassword(newPassword)
       dispatch(patchUser({ tempPassword: false }))
+      queryClient.setQueryData(["auth", "me", area ?? "any"], (old: any) => 
+        old ? { ...old, tempPassword: false } : old
+      )
     },
-    [dispatch],
+    [dispatch, queryClient, area],
   )
 
   const isOwner = user?.role === "AGENCY_OWNER"

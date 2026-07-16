@@ -15,6 +15,7 @@ import { notificationsRouter } from "./modules/notifications/notifications.route
 import { analyticsRouter } from "./modules/analytics/analytics.routes";
 import { socialRouter } from "./modules/social/social.routes";
 import { auditLogsRouter } from "./modules/audit-logs/audit-logs.routes";
+import { onboardingRouter } from "./modules/onboarding/onboarding.routes";
 import { storageService } from "./lib/storage/storage.service";
 
 const logger = pino({ name: "server start" });
@@ -51,6 +52,7 @@ app.get("/", (_, res) => {
 
 // API routes
 app.use("/api/auth", authRouter);
+app.use("/api/onboarding", onboardingRouter);
 app.use("/api/portal", portalRouter);
 app.use("/api/sub-accounts", subAccountsRouter);
 app.use("/api/users", usersRouter);

@@ -16,6 +16,7 @@
 		"start:dev": "node --import=tsx --watch src/index.ts",
 		"start:prod": "node dist/index.js",
 		"seed": "node --import=tsx prisma/seed.ts",
+		"seed:ghl": "bun run src/scripts/seed-ghl.ts",
 		"check": "biome check --write",
 		"test": "vitest run",
 		"test:cov": "vitest run --coverage"

@@ -1,9 +1,10 @@
-﻿"use client"
+"use client"
 
 import { formatDistanceToNow } from "date-fns"
 import { Loader2, MessageSquareWarning, Paperclip, Plus, Tag, TicketCheck } from "lucide-react"
 import { useState } from "react"
 import { AuthGuard } from "@/components/auth/AuthGuard"
+import { ForcePasswordModal } from "@/components/auth/ForcePasswordModal"
 import { AppShell } from "@/components/layouts/AppShell"
 import { NewTicketModal } from "@/components/tickets/NewTicketModal"
 import { TicketDetailModal } from "@/components/tickets/TicketDetailModal"
@@ -21,6 +22,8 @@ function ClientDashboard() {
   CLOSED:      { bar: "bg-gray-300",    note: "text-gray-500" },
 };
 const getStageStyle = (stage: string) => STAGE_STYLES[stage] ?? STAGE_STYLES.CLOSED;
+
+const written
 
   const { data: tickets, isLoading } = useMySubmittedTickets()
   const [openId, setOpenId] = useState<string | null>(null)
@@ -141,6 +144,7 @@ export default function ClientDashboardPage() {
   return (
     <AuthGuard allowedRoles={["SUB_ACCOUNT"]} redirectTo={ROUTES.PORTAL}>
       <ClientDashboard />
+      <ForcePasswordModal />
     </AuthGuard>
   )
 }

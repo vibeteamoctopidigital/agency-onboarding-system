@@ -3,7 +3,9 @@
 import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Check, Loader2 } from "lucide-react";
+import axiosInstance from "@/lib/axios";
 import { onboardingSchema, type OnboardingFormData } from "../schemas/onboarding.schema";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +22,7 @@ import { CountryCombobox } from "./CountryCombobox";
 import { CityCombobox } from "./CityCombobox";
 import { IndustryCombobox } from "./IndustryCombobox";
 import { COUNTRIES } from "../data/countries";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 const STEPS = [
   { id: 1, title: "PERSONAL INFORMATIONS" },
@@ -31,6 +34,12 @@ const STEPS = [
 export function ClientOnboardingForm() {
   const [currentStep, setCurrentStep] = React.useState(1);
   const [mediaFiles, setMediaFiles] = React.useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isPending, setIsPending] = React.useState(false);
+  const [countdown, setCountdown] = React.useState(10);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { adoptSession } = useAuth();
 
   const {
     register,
@@ -73,7 +82,7 @@ export function ClientOnboardingForm() {
     if (currentStep === 1) {
       fieldsToValidate = [
         "firstName", "lastName", "personalEmail", "phone", 
-        "country", "city", "identity", "personalAddress", "passportNo", "nationalIdNo"
+        "country", "city", "personalAddress", "passportNo", "nationalIdNo"
       ];
     } else if (currentStep === 2) {
       fieldsToValidate = [
@@ -101,15 +110,87 @@ export function ClientOnboardingForm() {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const onSubmit = (data: OnboardingFormData) => {
-    const payload = {
-      ...data,
-      media: mediaFiles,
-    };
-    console.log("🚀 READY TO SEND TO BACKEND:", JSON.stringify(payload, null, 2));
-    console.log("Media Files attached:", mediaFiles.map(f => f.name));
-    alert("Form submitted! Check the console for the payload.");
+  const onSubmit = async (data: OnboardingFormData) => {
+    setIsSubmitting(true);
+    
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, String(value));
+        }
+      });
+
+      mediaFiles.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      const response = await axiosInstance.post("/onboarding/client", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const result = response.data;
+      
+      // Store tokens and adopt session properly in Redux/localStorage
+      if (result.data?.accessToken && result.data?.user) {
+        adoptSession(result.data.user, result.data.accessToken, result.data.refreshToken);
+      }
+
+      setIsPending(true);
+      
+      // Start 10-second countdown
+      let currentCount = 10;
+      const interval = setInterval(() => {
+        currentCount -= 1;
+        setCountdown(currentCount);
+        if (currentCount <= 0) {
+          clearInterval(interval);
+          // Smart redirection
+          const returnTo = searchParams.get("returnTo") || searchParams.get("redirect");
+          if (returnTo) {
+            window.location.href = returnTo;
+          } else {
+            window.location.href = "/client/dashboard";
+          }
+        }
+      }, 1000);
+
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      alert(error?.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const onErrors = (errors: any) => {
+    console.error("Validation Errors:", errors);
+    
+    // Jump to the step with the first error
+    const errorFields = Object.keys(errors);
+    if (errorFields.length > 0) {
+      const firstField = errorFields[0];
+      if (["firstName", "lastName", "personalEmail", "phone", "country", "city", "personalAddress", "passportNo", "nationalIdNo"].includes(firstField)) {
+        setCurrentStep(1);
+      } else if (["companyName", "website", "companyBrief", "businessEmail", "industry", "customIndustry", "employeeCount", "businessAddress", "linkedInUrl", "socialLinks"].includes(firstField)) {
+        setCurrentStep(2);
+      } else if (["problemDetails", "currentTools", "primaryGoal"].includes(firstField)) {
+        setCurrentStep(3);
+      }
+    }
+  };
+
+  if (isPending) {
+    return (
+      <div className="w-full max-w-xl mx-auto p-12 bg-white rounded-2xl shadow-sm border border-gray-100 text-center flex flex-col items-center justify-center space-y-6">
+        <Loader2 className="w-12 h-12 text-[#0f172a] animate-spin" />
+        <h2 className="text-2xl font-bold text-gray-900">Processing Your Request</h2>
+        <p className="text-gray-500">
+          We are setting up your account. You will be redirected automatically in <strong className="text-gray-900 text-xl">{countdown}</strong> seconds.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-5xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -156,7 +237,7 @@ export function ClientOnboardingForm() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit, onErrors)} className="space-y-6">
         
         {/* STEP 1: PERSONAL */}
         <div className={currentStep === 1 ? "block" : "hidden"}>
@@ -176,11 +257,7 @@ export function ClientOnboardingForm() {
               <Input id="personalEmail" type="email" {...register("personalEmail")} placeholder="john@example.com" className={errors.personalEmail ? "border-red-500" : ""} />
               {errors.personalEmail && <p className="text-red-500 text-xs">{errors.personalEmail.message}</p>}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="identity">Identity / Nationality *</Label>
-              <Input id="identity" {...register("identity")} placeholder="e.g. American" className={errors.identity ? "border-red-500" : ""} />
-              {errors.identity && <p className="text-red-500 text-xs">{errors.identity.message}</p>}
-            </div>
+
             
             {/* Country and City MOVED TO STEP 1 */}
             <div className="space-y-2">
@@ -440,8 +517,7 @@ export function ClientOnboardingForm() {
                   <div className="font-medium text-gray-900">{formValues.city}, {formValues.country}</div>
                   <div className="text-gray-500">Address</div>
                   <div className="font-medium text-gray-900">{formValues.personalAddress}</div>
-                  <div className="text-gray-500">Identity</div>
-                  <div className="font-medium text-gray-900">{formValues.identity}</div>
+
                   <div className="text-gray-500">Passport No</div>
                   <div className="font-medium text-gray-900">{formValues.passportNo}</div>
                   <div className="text-gray-500">National ID</div>
@@ -565,8 +641,14 @@ export function ClientOnboardingForm() {
               Continue &rarr;
             </Button>
           ) : (
-            <Button type="submit" className="w-36 bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
-              Submit Request
+            <Button type="submit" disabled={isSubmitting} className="w-40 bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center justify-center gap-2">
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Submitting...
+                </>
+              ) : (
+                "Submit Request"
+              )}
             </Button>
           )}
         </div>

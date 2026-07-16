@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -33,7 +33,8 @@ export function AuthGuard({ children, allowedRoles, redirectTo = ROUTES.LOGIN }:
     isAuthenticated &&
     user?.role === "TEAM_MEMBER" &&
     user?.tempPassword === true &&
-    pathname !== ROUTES.ONBOARDING
+    pathname !== ROUTES.ONBOARDING &&
+    !pathname.startsWith("/onboarding/client")
 
   useEffect(() => {
     if (isLoading || isAuthenticated) return

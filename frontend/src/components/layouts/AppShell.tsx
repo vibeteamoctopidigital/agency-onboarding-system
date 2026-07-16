@@ -1,5 +1,6 @@
-﻿"use client"
+"use client"
 
+import { UserCircle } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -42,7 +43,10 @@ const TEAM_NAV: NavItem[] = [
   { href: "/team/orders", label: "My orders", countKey: "myOrders" },
 ]
 
-const CLIENT_NAV: NavItem[] = [{ href: "/client/dashboard", label: "My tickets" }]
+const CLIENT_NAV: NavItem[] = [
+  { href: "/client/dashboard", label: "My tickets" },
+  { href: "/client/dashboard/profile", label: "Profile" },
+]
 
 // /social/* is a SEPARATE app in the UI (its own GHL menu link) - same design
 // language and the same session, but its own nav with no ticket pages.
@@ -51,7 +55,10 @@ const SOCIAL_OWNER_NAV: NavItem[] = [
   { href: "/social/admin/sub-accounts", label: "Sub-accounts" },
 ]
 
-const SOCIAL_CLIENT_NAV: NavItem[] = [{ href: "/social/client", label: "My orders" }]
+const SOCIAL_CLIENT_NAV: NavItem[] = [
+  { href: "/social/client", label: "My orders" },
+  { href: "/client/dashboard/profile", label: "Profile" },
+]
 
 /**
  * Live attention counts for the nav badges. Uses the SAME query keys as the
@@ -147,14 +154,18 @@ export function AppShell({
       {/* GHL-style top tab bar - transparent over the canvas, bordered tabs */}
       <header className="bg-transparent border-b border-gray-200 sticky top-0 z-30">
         <div className="px-4 sm:px-6 h-[54px] flex items-center justify-between gap-3">
-          {/* Owner-only app switcher: ONE GHL menu link serves both products -
+          {/* Owner or SubAccount app switcher: ONE GHL menu link serves both products -
               the dropdown toggles between the support desk and the social app. */}
-          {isOwner && (
+          {(isOwner || isSubAccount) && (
             <Select
               value={inSocial ? "social" : "support"}
               onValueChange={(value) => {
-                if (value === "social" && !inSocial) router.push("/social/admin")
-                if (value === "support" && inSocial) router.push("/admin/dashboard")
+                if (value === "social" && !inSocial) {
+                  router.push(isOwner ? "/social/admin" : "/social/client")
+                }
+                if (value === "support" && inSocial) {
+                  router.push(isOwner ? "/admin/dashboard" : "/client/dashboard")
+                }
               }}
             >
               <SelectTrigger

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { CheckCircle2, Eye, EyeOff, HeadphonesIcon, Loader2, Lock, LogOut, ShieldCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -7,7 +7,7 @@ import { toast } from "@/lib/toast"
 import { AuthGuard } from "@/components/auth/AuthGuard"
 import { Button } from "@/components/ui/button"
 import { ROUTES } from "@/constants"
-import { useAuth } from "@/hooks/auth/useAuth"
+import { useAuth, homeRouteFor } from "@/hooks/auth/useAuth"
 
 const ONBOARDING_POINTS = [
   {
@@ -28,6 +28,21 @@ const ONBOARDING_POINTS = [
   },
 ]
 
+const CLIENT_POINTS = [
+  {
+    title: "Track your requests",
+    body: "Your dashboard shows the status of all your support tickets and social orders in real-time.",
+  },
+  {
+    title: "Communicate securely",
+    body: "All communication with our team happens securely through this portal. You'll be notified of any updates.",
+  },
+  {
+    title: "Manage your account",
+    body: "Update your profile, billing, and settings easily from your portal.",
+  },
+]
+
 function OnboardingInner() {
   const { user, firstLoginPassword, logout } = useAuth()
   const router = useRouter()
@@ -39,7 +54,7 @@ function OnboardingInner() {
 
   // Someone who already has a real password doesn't belong here.
   useEffect(() => {
-    if (user && !user.tempPassword) router.replace(ROUTES.TEAM_DASHBOARD)
+    if (user && !user.tempPassword) router.replace(homeRouteFor(user.role))
   }, [user, router])
 
   const tooShort = password.length > 0 && password.length < 8
@@ -53,7 +68,7 @@ function OnboardingInner() {
     try {
       await firstLoginPassword(password)
       toast.success("Password set - welcome aboard!")
-      router.replace(ROUTES.TEAM_DASHBOARD)
+      router.replace(homeRouteFor(user?.role || "TEAM_MEMBER"))
     } catch (err: any) {
       toast.error(err?.response?.data?.error?.message || "Could not set your password")
     } finally {
@@ -72,10 +87,12 @@ function OnboardingInner() {
           <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gray-900 mb-4">
             <HeadphonesIcon className="w-5 h-5 text-white" />
           </div>
-          <h2 className="text-lg font-bold text-gray-900">Welcome to the team, {user?.name?.split(" ")[0]}</h2>
-          <p className="text-[13px] text-gray-500 mt-1 mb-5">A quick brief on how support works here.</p>
+          <h2 className="text-lg font-bold text-gray-900">Welcome, {user?.name?.split(" ")[0]}</h2>
+          <p className="text-[13px] text-gray-500 mt-1 mb-5">
+            {user?.role === "SUB_ACCOUNT" ? "A quick brief on what to expect." : "A quick brief on how support works here."}
+          </p>
           <ul className="space-y-3.5">
-            {ONBOARDING_POINTS.map((p) => (
+            {(user?.role === "SUB_ACCOUNT" ? CLIENT_POINTS : ONBOARDING_POINTS).map((p) => (
               <li key={p.title} className="flex gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
                 <div>
@@ -160,7 +177,7 @@ function OnboardingInner() {
 
 export default function OnboardingPage() {
   return (
-    <AuthGuard allowedRoles={["TEAM_MEMBER"]}>
+    <AuthGuard allowedRoles={["TEAM_MEMBER", "SUB_ACCOUNT"]}>
       <OnboardingInner />
     </AuthGuard>
   )
