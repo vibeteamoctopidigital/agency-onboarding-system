@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Approved</title>
+  <style>
+    /* Modern Email Reset */
+    body, p, h1, h2, h3, h4, h5, h6 { margin: 0; padding: 0; }
+    body { background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100% !important; line-height: 1.6; color: #18181b; }
+    table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; max-width: 100%; height: auto; }
+    
+    /* Layout */
+    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+    .header { background-color: #18181b; padding: 32px 40px; text-align: center; }
+    .header h1 { color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin: 0; }
+    .content { padding: 40px; }
+    .footer { background-color: #fafafa; border-top: 1px solid #f4f4f5; padding: 32px 40px; text-align: center; }
+    
+    /* Typography */
+    h2 { font-size: 20px; font-weight: 600; color: #18181b; margin-bottom: 24px; letter-spacing: -0.3px; }
+    p { font-size: 15px; color: #52525b; margin-bottom: 24px; }
+    
+    /* Highlights & Badges */
+    .highlight-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 32px; }
+    .highlight-box p { margin-bottom: 0; color: #334155; font-size: 14px; }
+    .highlight-box strong { color: #0f172a; font-weight: 600; display: block; margin-top: 4px; font-size: 16px; }
+    
+    .status-badge { display: inline-block; background-color: #dcfce7; color: #166534; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 12px; border-radius: 99px; margin-bottom: 16px; }
+    
+    /* Button */
+    .button-container { text-align: center; margin-top: 8px; margin-bottom: 16px; }
+    .button { display: inline-block; background-color: #3b82f6; color: #ffffff !important; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 28px; border-radius: 8px; text-align: center; transition: background-color 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .button:hover { background-color: #2563eb; }
+    
+    /* Footer Text */
+    .footer-text { font-size: 13px; color: #a1a1aa; margin-bottom: 8px; }
+    .footer-link { color: #a1a1aa; text-decoration: underline; }
+    
+    @media screen and (max-width: 600px) {
+      .container { margin: 20px; border-radius: 12px; width: auto !important; }
+      .header, .content, .footer { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div style="display: none; max-height: 0px; overflow: hidden;">
+    Great news! {{clientName}} just approved the proposal for {{orderTitle}}.
+  </div>
+  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f4f4f5; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <!-- Main Container -->
+        <table class="container" width="600" border="0" cellspacing="0" cellpadding="0">
+          
+          <!-- Header -->
+          <tr>
+            <td class="header">
+              <h1>Agency Portal</h1>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td class="content">
+              <div class="status-badge">Approved</div>
+              <h2>Great news, {{name}}!</h2>
+              <p>Your client <strong>{{clientName}}</strong> has just reviewed and approved your proposal. You're officially cleared to start working on their order.</p>
+              
+              <div class="highlight-box">
+                <p>Order details:</p>
+                <strong>{{orderTitle}}</strong>
+              </div>
+              
+              <div class="button-container">
+                <a href="{{orderUrl}}" class="button">View Order Details</a>
+              </div>
+              
+              <p style="margin-bottom: 0;">Our team has been notified and the order status has automatically moved to "In Progress".</p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td class="footer">
+              <p class="footer-text">This email was sent automatically from your agency portal.</p>
+              <p class="footer-text" style="margin-bottom: 0;">&copy; 2026 Agency Portal. All rights reserved.</p>
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
