@@ -23,7 +23,7 @@ function ClientDashboard() {
 };
 const getStageStyle = (stage: string) => STAGE_STYLES[stage] ?? STAGE_STYLES.CLOSED;
 
-const written
+
 
   const { data: tickets, isLoading } = useMySubmittedTickets()
   const [openId, setOpenId] = useState<string | null>(null)
