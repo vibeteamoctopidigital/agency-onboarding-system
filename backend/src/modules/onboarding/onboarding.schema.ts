@@ -2,29 +2,53 @@ import { z } from "zod";
 
 export const clientOnboardingSchema = z.object({
   body: z.object({
-    firstName: z.string().min(2, "First name is required"),
-    lastName: z.string().min(2, "Last name is required"),
-    personalEmail: z.string().email("Valid email is required"),
-    phone: z.string().min(1, "Phone is required"),
-    country: z.string().min(2, "Country is required"),
-    city: z.string().min(2, "City is required"),
-    personalAddress: z.string().min(5, "Personal address is required"),
-    passportNo: z.string().min(5, "Passport number is required"),
-    nationalIdNo: z.string().min(1, "National ID is required"),
+    crmStatus: z.enum(["new", "existing"]),
 
-    companyName: z.string().min(2, "Company name is required"),
-    website: z.string().optional().or(z.literal("")),
-    companyBrief: z.string().min(10, "Company brief is required"),
-    businessEmail: z.string().email("Valid business email is required"),
-    industry: z.string().min(2, "Industry is required"),
+    // For "New in CRM"
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    personalEmail: z.string().email("Valid email is required").optional().or(z.literal("")),
+    phone: z.string().optional(),
+    country: z.string().optional(),
+    city: z.string().optional(),
+    personalAddress: z.string().optional(),
+
+    friendlyBusinessName: z.string().optional(),
+    legalBusinessName: z.string().optional(),
+    businessEmail: z.string().email("Valid business email is required").optional().or(z.literal("")),
+    businessPhone: z.string().optional(),
+    brandedDomain: z.string().optional(),
+    website: z.string().optional(),
+    businessNiche: z.string().optional(),
+    businessCurrency: z.string().optional(),
+    
+    businessStreetAddress: z.string().optional(),
+    businessCity: z.string().optional(),
+    businessPostalCode: z.string().optional(),
+    businessStateRegion: z.string().optional(),
+    businessCountry: z.string().optional(),
+    businessTimeZone: z.string().optional(),
+    platformLanguage: z.string().optional(),
+    outboundLanguage: z.string().optional(),
+
+    businessType: z.string().optional(),
+    industry: z.string().optional(),
     customIndustry: z.string().optional(),
-    employeeCount: z.string().min(1, "Employee count is required"),
-    businessAddress: z.string().min(5, "Business address is required"),
-    linkedInUrl: z.string().optional().or(z.literal("")),
-    socialLinks: z.string().optional(),
+    registrationIdType: z.string().optional(),
+    registrationNumber: z.string().optional(),
+    isNotRegistered: z.union([z.boolean(), z.string().transform(v => v === "true")]).optional(),
+    regionsOfOperations: z.union([z.array(z.string()), z.string()]).optional(),
 
-    problemDetails: z.string().min(20, "Problem details are required"),
+    // For "Already have CRM"
+    repFirstName: z.string().optional(),
+    repLastName: z.string().optional(),
+    repEmail: z.string().email("Valid email is required").optional().or(z.literal("")),
+    repJobPosition: z.string().optional(),
+    repPhone: z.string().optional(),
+
+    // Common
+    problemDetails: z.string().min(1, "Problem details are required"),
     currentTools: z.string().optional(),
-    primaryGoal: z.string().min(10, "Primary goal is required"),
+    primaryGoal: z.string().min(1, "Primary goal is required"),
   }),
 });

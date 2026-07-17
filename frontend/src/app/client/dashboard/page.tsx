@@ -1,7 +1,7 @@
 "use client"
 
 import { formatDistanceToNow } from "date-fns"
-import { Loader2, MessageSquareWarning, Paperclip, Plus, Tag, TicketCheck } from "lucide-react"
+import { Loader2, MessageSquareWarning, Paperclip, Plus, Tag, TicketCheck, Hourglass } from "lucide-react"
 import { useState } from "react"
 import { AuthGuard } from "@/components/auth/AuthGuard"
 import { ForcePasswordModal } from "@/components/auth/ForcePasswordModal"
@@ -12,8 +12,11 @@ import { PriorityBadge, StageBadge } from "@/components/tickets/ticket-bits"
 import { Button } from "@/components/ui/button"
 import { ROUTES } from "@/constants"
 import { useMySubmittedTickets } from "@/hooks/query/useTickets"
+import { useAuth } from "@/hooks/auth/useAuth"
 
 function ClientDashboard() {
+  const { user } = useAuth();
+
   const STAGE_STYLES: Record<string, { bar: string; note: string }> = {
   OPEN:        { bar: "bg-blue-400",    note: "text-blue-600" },
   IN_PROGRESS: { bar: "bg-amber-400",   note: "text-amber-600" },
@@ -28,6 +31,22 @@ const getStageStyle = (stage: string) => STAGE_STYLES[stage] ?? STAGE_STYLES.CLO
   const { data: tickets, isLoading } = useMySubmittedTickets()
   const [openId, setOpenId] = useState<string | null>(null)
   const [newOpen, setNewOpen] = useState(false)
+
+  if (user?.subAccountStatus === "PENDING") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center space-y-6">
+          <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto">
+            <Hourglass className="w-8 h-8 animate-pulse" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Waiting for Approval</h2>
+          <p className="text-gray-500">
+            Your sub-account is currently pending approval by the agency owner. We will notify you once your account has been reviewed and activated.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AppShell

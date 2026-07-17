@@ -15,75 +15,103 @@ export class OnboardingService {
       throw badRequest("No agency configured in the system.");
     }
 
-    // 2. MOCKED GHL INTEGRATION
-    // -------------------------------------------------------------
-    // In a real scenario, we would call ghlClient.createLocation(...)
-    // const ghlResponse = await ghlClient.createLocation(agency.ghlApiKeyEncrypted, {
-    //   name: data.companyName,
-    //   email: data.businessEmail,
-    //   phone: data.phone,
-    //   address: data.businessAddress,
-    //   city: data.city,
-    //   country: data.country
-    // });
-    // const ghlLocationId = ghlResponse.id;
-    // -------------------------------------------------------------
-    
-    // MOCK: Generate a fake GHL location ID for testing
-    const ghlLocationId = `ghl_loc_${Math.random().toString(36).substring(7)}`;
+    const isNewInCrm = data.crmStatus === "new";
+    const ghlLocationId = `pending_loc_${Math.random().toString(36).substring(7)}`;
 
-    // 3. Separate Personal and Business info
-    const personalInfos = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phone: data.phone,
-      country: data.country,
-      city: data.city,
-      personalAddress: data.personalAddress,
-      passportNo: data.passportNo,
-      nationalIdNo: data.nationalIdNo,
-    };
+    let personalInfos: any = {};
+    let businessInfos: any = {};
 
-    const businessInfos = {
-      industry: data.industry === "Other" ? data.customIndustry : data.industry,
-      employeeCount: data.employeeCount,
-      businessAddress: data.businessAddress,
-      website: data.website,
-      linkedInUrl: data.linkedInUrl,
-      socialLinks: data.socialLinks,
-      companyBrief: data.companyBrief,
-    };
+    if (isNewInCrm) {
+      personalInfos = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        country: data.country,
+        city: data.city,
+        personalAddress: data.personalAddress,
+      };
+
+      businessInfos = {
+        friendlyBusinessName: data.friendlyBusinessName,
+        legalBusinessName: data.legalBusinessName,
+        businessEmail: data.businessEmail,
+        businessPhone: data.businessPhone,
+        brandedDomain: data.brandedDomain,
+        website: data.website,
+        businessNiche: data.businessNiche,
+        businessCurrency: data.businessCurrency,
+        businessStreetAddress: data.businessStreetAddress,
+        businessCity: data.businessCity,
+        businessPostalCode: data.businessPostalCode,
+        businessStateRegion: data.businessStateRegion,
+        businessCountry: data.businessCountry,
+        businessTimeZone: data.businessTimeZone,
+        platformLanguage: data.platformLanguage,
+        outboundLanguage: data.outboundLanguage,
+        businessType: data.businessType,
+        industry: data.industry === "Other" ? data.customIndustry : data.industry,
+        registrationIdType: data.registrationIdType,
+        registrationNumber: data.registrationNumber,
+        isNotRegistered: data.isNotRegistered,
+        regionsOfOperations: data.regionsOfOperations,
+      };
+    } else {
+      personalInfos = {
+        repFirstName: data.repFirstName,
+        repLastName: data.repLastName,
+        repEmail: data.repEmail,
+        repJobPosition: data.repJobPosition,
+        repPhone: data.repPhone,
+      };
+    }
+
+    const subAccountName = isNewInCrm 
+      ? (data.friendlyBusinessName || data.legalBusinessName || "Pending Sub-Account") 
+      : (data.repFirstName + " " + data.repLastName + " (Existing CRM)");
+      
+    const subAccountEmail = isNewInCrm ? (data.personalEmail || data.businessEmail) : data.repEmail;
+
+    // Check if user already exists
+    if (subAccountEmail) {
+      const existingUser = await prisma.user.findFirst({
+        where: { email: subAccountEmail, agencyId: agency.id }
+      });
+      if (existingUser) {
+        throw badRequest(`An account with the email ${subAccountEmail} is already registered.`);
+      }
+    }
 
     // 4. Save to Database
     const subAccount = await prisma.subAccount.create({
       data: {
         agencyId: agency.id,
         ghlLocationId,
-        name: data.companyName,
-        contactEmail: data.personalEmail,
-        businessEmail: data.businessEmail,
+        name: subAccountName,
+        contactEmail: subAccountEmail,
+        businessEmail: isNewInCrm ? data.businessEmail : null,
         personalInfos,
         businessInfos,
-        status: "ACTIVE", // Automatically active as per requirements
+        status: "PENDING", 
+        isNewInCrm,
       },
     });
 
     // 5. Create the User with Default Password
-    // A default plaintext password is used, which forces them to change it on login.
     const defaultPassword = "ChangeMe123!";
-    
-    // In auth.service, passwords might be hashed. Wait, the user specifically requested:
-    // "auto login oky with default password (no need to hash this password oky ) after verify then check password changes or not if not change still default then force fully chnage password"
-    // So we will literally store the plaintext password in passwordHash for this specific flow.
+    const userName = isNewInCrm ? `${data.firstName} ${data.lastName}` : `${data.repFirstName} ${data.repLastName}`;
+    const firstInitial = isNewInCrm ? data.firstName?.[0] : data.repFirstName?.[0];
+    const lastInitial = isNewInCrm ? data.lastName?.[0] : data.repLastName?.[0];
+    const userInitials = `${firstInitial || ""}${lastInitial || ""}`.toUpperCase();
+
     const user = await prisma.user.create({
       data: {
         agencyId: agency.id,
-        email: data.personalEmail, // Using personal email for portal login
-        name: `${data.firstName} ${data.lastName}`,
-        initials: `${data.firstName[0]}${data.lastName[0]}`.toUpperCase(),
+        email: subAccountEmail, 
+        name: userName,
+        initials: userInitials,
         role: "SUB_ACCOUNT",
-        passwordHash: defaultPassword, // Stored in plaintext as requested
-        tempPassword: true, // Flag to force password change
+        passwordHash: defaultPassword, 
+        tempPassword: true, 
       },
     });
 
@@ -93,27 +121,13 @@ export class OnboardingService {
       data: { userId: user.id },
     });
 
-    // 6. TICKET CREATION (Commented out as per request)
-    // -------------------------------------------------------------
-    // await prisma.ticket.create({
-    //   data: {
-    //     subject: "New Client Onboarding Details",
-    //     description: `Problem Details:\n${data.problemDetails}\n\nGoal:\n${data.primaryGoal}\n\nTools:\n${data.currentTools}`,
-    //     subAccountId: user.id,
-    //     agencyId: agency.id,
-    //     category: "Onboarding",
-    //     stage: "NEW",
-    //   }
-    // });
-    // -------------------------------------------------------------
-
     await logAudit({
       agencyId: agency.id,
       actorId: user.id,
       action: "CLIENT_ONBOARDED",
       entityType: "SubAccount",
       entityId: subAccount.id,
-      details: `New client ${data.companyName} completed onboarding via form.`,
+      details: `New client ${subAccountName} completed onboarding via form. Status is PENDING.`,
     });
 
     // 7. UPLOAD MEDIA TO GHL (if any files were attached)

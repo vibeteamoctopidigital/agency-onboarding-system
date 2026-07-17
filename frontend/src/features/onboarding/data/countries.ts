@@ -20,7 +20,6 @@ export const COUNTRIES: CountryData[] = [
   { code: "BR", name: "Brazil", dialCode: "+55", flag: "🇧🇷", phoneFormat: /^\d{10,11}$/, idFormat: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/ }, // CPF
   { code: "MX", name: "Mexico", dialCode: "+52", flag: "🇲🇽", phoneFormat: /^\d{10}$/, idFormat: /^[A-Z]{4}\d{6}[HM][A-Z]{5}\d{2}$/i }, // CURP
   { code: "ZA", name: "South Africa", dialCode: "+27", flag: "🇿🇦", phoneFormat: /^\d{9}$/, idFormat: /^\d{13}$/ },
-  { code: "NG", name: "Nigeria", dialCode: "+234", flag: "🇳🇬", phoneFormat: /^\d{10}$/, idFormat: /^\d{11}$/ }, // NIN
-  { code: "AE", name: "United Arab Emirates", dialCode: "+971", flag: "🇦🇪", phoneFormat: /^\d{9}$/, idFormat: /^784-\d{4}-\d{7}-\d{1}$/ },
+  { code: "SE", name: "Sweden", dialCode: "+46", flag: "🇸🇪", phoneFormat: /^\d{9,10}$/, idFormat: /^\d{10,12}$/ }, // Personal Identity Number
   { code: "SG", name: "Singapore", dialCode: "+65", flag: "🇸🇬", phoneFormat: /^\d{8}$/, idFormat: /^[STFG]\d{7}[A-Z]$/i },
 ];

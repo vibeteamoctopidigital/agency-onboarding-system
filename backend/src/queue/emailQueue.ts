@@ -1,11 +1,8 @@
-import { Queue } from "bullmq";
-import { redis } from "../config/redis";
-
-export const emailQueue = new Queue("emailQueue", {
-  connection: redis as any,
-});
-
-// ✅ Job waiting in queue
-emailQueue.on("waiting", (jobId) => {
-  console.log(`🕒 Job ${jobId} is waiting in the queue`);
-});
+export const emailQueue = {
+  add: async (name: string, data: any) => {
+    console.log(`[MOCK EMAIL QUEUE] Added job: ${name}`, data);
+  },
+  on: (event: string, callback: any) => {
+    console.log(`[MOCK EMAIL QUEUE] Registered event: ${event}`);
+  }
+} as any;

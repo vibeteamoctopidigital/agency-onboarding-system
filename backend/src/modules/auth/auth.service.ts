@@ -1,4 +1,4 @@
-﻿import crypto from "node:crypto";
+import crypto from "node:crypto";
 import { ghlClient } from "../../lib/ghl/ghl.client";
 import { logAudit } from "../../utils/audit";
 import { badGateway, badRequest, conflict, unauthorized } from "../../utils/appError";
@@ -363,7 +363,7 @@ export class AuthService {
   async getMe(userId: string) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { agency: true },
+      include: { agency: true, subAccountProfile: true },
     });
 
     if (!user) throw unauthorized("User not found", "USER_NOT_FOUND");
@@ -385,6 +385,7 @@ export class AuthService {
       tempPassword: user.tempPassword,
       contactEmail: user.contactEmail,
       plan: user.plan,
+      subAccountStatus: user.subAccountProfile?.status,
     };
   }
 }

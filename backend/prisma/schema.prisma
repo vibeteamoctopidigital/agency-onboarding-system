@@ -85,6 +85,7 @@ model SubAccount {
   personalInfos    Json?
   businessInfos    Json?
   status           SubAccountStatus @default(PENDING)
+  isNewInCrm       Boolean          @default(true)
   rejectionComment String?
   requestedAt      DateTime         @default(now())
   decidedAt        DateTime?

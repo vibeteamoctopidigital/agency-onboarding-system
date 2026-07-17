@@ -1,4 +1,4 @@
-﻿export type UserRole = "AGENCY_OWNER" | "TEAM_MEMBER" | "SUB_ACCOUNT"
+export type UserRole = "AGENCY_OWNER" | "TEAM_MEMBER" | "SUB_ACCOUNT"
 
 export type TicketPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT"
 
@@ -28,6 +28,7 @@ export interface User {
   /** Owner only - whether the media-storage sub-account credentials are saved. */
   mediaStorageConfigured?: boolean
   mediaLocationId?: string | null
+  subAccountStatus?: string
 }
 
 export interface Ticket {

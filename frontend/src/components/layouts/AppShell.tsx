@@ -154,34 +154,31 @@ export function AppShell({
       {/* GHL-style top tab bar - transparent over the canvas, bordered tabs */}
       <header className="bg-transparent border-b border-gray-200 sticky top-0 z-30">
         <div className="px-4 sm:px-6 h-[54px] flex items-center justify-between gap-3">
-          {/* Owner or SubAccount app switcher: ONE GHL menu link serves both products -
-              the dropdown toggles between the support desk and the social app. */}
+          {/* Owner or SubAccount app switcher: side-by-side links */}
           {(isOwner || isSubAccount) && (
-            <Select
-              value={inSocial ? "social" : "support"}
-              onValueChange={(value) => {
-                if (value === "social" && !inSocial) {
-                  router.push(isOwner ? "/social/admin" : "/social/client")
-                }
-                if (value === "support" && inSocial) {
-                  router.push(isOwner ? "/admin/dashboard" : "/client/dashboard")
-                }
-              }}
-            >
-              <SelectTrigger
-                className="h-9 w-auto min-w-[150px] flex-shrink-0 rounded-lg border-gray-900 bg-gray-900 text-white font-semibold hover:border-gray-700 hover:bg-gray-800 focus:ring-gray-400/40 [&>svg]:text-gray-300"
-                aria-label="Switch app"
+            <div className="flex items-center space-x-2 shrink-0">
+              <Link
+                href={isOwner ? "/admin/dashboard" : "/client/dashboard"}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors",
+                  !inSocial ? "bg-black text-white" : "bg-gray-200 text-blue-600 hover:bg-gray-300"
+                )}
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="support">Support tickets</SelectItem>
-                <SelectItem value="social">Social orders</SelectItem>
-              </SelectContent>
-            </Select>
+                Support tickets
+              </Link>
+              <Link
+                href={isOwner ? "/social/admin" : "/social/client"}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors",
+                  inSocial ? "bg-black text-white" : "bg-gray-200 text-blue-600 hover:bg-gray-300"
+                )}
+              >
+                Social orders
+              </Link>
+            </div>
           )}
 
-          <nav className="flex items-center overflow-x-auto py-2 flex-1" aria-label="Main">
+          <nav className="flex items-center overflow-x-auto py-2 ml-auto" aria-label="Main">
             {nav.map((item, i) => {
               const active = pathname === item.href
               const count = item.countKey ? counts[item.countKey] : 0
