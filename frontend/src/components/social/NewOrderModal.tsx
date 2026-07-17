@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { Loader2, X } from "lucide-react"
 import { useState } from "react"
@@ -201,7 +201,7 @@ export function NewOrderModal({ onClose }: { onClose: () => void }) {
             </div>
           </div>
 
-          {/* {!isSubAccount && (
+          {!isSubAccount && (
             <div>
               <label className="block text-[12px] font-semibold text-gray-600 mb-1.5">Message to the client</label>
               <textarea
@@ -212,7 +212,7 @@ export function NewOrderModal({ onClose }: { onClose: () => void }) {
               />
               <p className="text-[11px] text-gray-400 mt-1.5">The client sees this message and must approve the proposal before work starts.</p>
             </div>
-          )} */}
+          )}
 
           <div>
             <label className="block text-[12px] font-semibold text-gray-600 mb-1.5">Design samples & docs</label>
