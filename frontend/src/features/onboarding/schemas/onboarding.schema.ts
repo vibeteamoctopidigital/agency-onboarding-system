@@ -110,6 +110,7 @@ export const onboardingSchema = z.object({
     if (!data.repEmail || !/^\S+@\S+\.\S+$/.test(data.repEmail)) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["repEmail"], message: "Valid email is required" });
     if (!data.repJobPosition || data.repJobPosition.trim().length === 0) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["repJobPosition"], message: "Job position is required" });
     if (!data.repPhone || data.repPhone.trim().length === 0) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["repPhone"], message: "Phone number is required" });
+    if (!data.repEinTin || data.repEinTin.trim().length === 0) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["repEinTin"], message: "EIN / TIN number is required" });
   }
 });
 

@@ -108,7 +108,7 @@ export function ClientOnboardingForm() {
       }
     } else if (crmStatus === "existing") {
       if (currentStep === 2) {
-        fieldsToValidate = ["repFirstName", "repLastName", "repEmail", "repJobPosition", "repPhone"];
+        fieldsToValidate = ["repFirstName", "repLastName", "repEmail", "repJobPosition", "repPhone", "repEinTin"];
       } else if (currentStep === 3) {
         fieldsToValidate = ["problemDetails", "currentTools", "primaryGoal"];
       }
@@ -382,7 +382,7 @@ export function ClientOnboardingForm() {
               {errors.repPhone && <p className="text-red-500 text-xs">{errors.repPhone.message}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="repEinTin">EIN / TIN Number <span className="text-gray-400 font-normal">(Optional)</span></Label>
+              <Label htmlFor="repEinTin">EIN / TIN Number *</Label>
               <Input id="repEinTin" {...register("repEinTin")} placeholder="e.g. 12-3456789" className={errors.repEinTin ? "border-red-500" : ""} />
               {errors.repEinTin && <p className="text-red-500 text-xs">{errors.repEinTin.message}</p>}
             </div>

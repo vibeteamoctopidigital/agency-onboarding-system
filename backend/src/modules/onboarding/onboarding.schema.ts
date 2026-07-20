@@ -45,7 +45,7 @@ export const clientOnboardingSchema = z.object({
     repEmail: z.string().email("Valid email is required").optional().or(z.literal("")),
     repJobPosition: z.string().optional(),
     repPhone: z.string().optional(),
-    repEinTin: z.string().optional(),
+    repEinTin: z.string().min(1, "EIN / TIN number is required").optional(),
 
     // Common
     problemDetails: z.string().min(1, "Problem details are required"),
