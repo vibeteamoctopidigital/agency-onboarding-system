@@ -62,6 +62,7 @@ export class OnboardingService {
         repEmail: data.repEmail,
         repJobPosition: data.repJobPosition,
         repPhone: data.repPhone,
+        repEinTin: data.repEinTin,
       };
     }
 

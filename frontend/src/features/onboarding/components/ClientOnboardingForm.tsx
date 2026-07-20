@@ -381,6 +381,11 @@ export function ClientOnboardingForm() {
               <Input id="repPhone" type="tel" {...register("repPhone")} placeholder="+1 555 123 4567" className={errors.repPhone ? "border-red-500" : ""} />
               {errors.repPhone && <p className="text-red-500 text-xs">{errors.repPhone.message}</p>}
             </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="repEinTin">EIN / TIN Number <span className="text-gray-400 font-normal">(Optional)</span></Label>
+              <Input id="repEinTin" {...register("repEinTin")} placeholder="e.g. 12-3456789" className={errors.repEinTin ? "border-red-500" : ""} />
+              {errors.repEinTin && <p className="text-red-500 text-xs">{errors.repEinTin.message}</p>}
+            </div>
           </div>
         </div>
 
@@ -693,6 +698,12 @@ export function ClientOnboardingForm() {
                       <div className="font-medium text-gray-900">{formValues.repEmail}</div>
                       <div className="text-gray-500">Phone</div>
                       <div className="font-medium text-gray-900">{formValues.repPhone}</div>
+                      {formValues.repEinTin && (
+                        <>
+                          <div className="text-gray-500">EIN / TIN Number</div>
+                          <div className="font-medium text-gray-900">{formValues.repEinTin}</div>
+                        </>
+                      )}
                     </>
                   )}
                 </div>

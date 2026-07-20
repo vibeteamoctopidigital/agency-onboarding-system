@@ -51,6 +51,7 @@ export const onboardingSchema = z.object({
   repEmail: z.string().optional(),
   repJobPosition: z.string().optional(),
   repPhone: z.string().optional(),
+  repEinTin: z.string().optional(),
 
   // ==========================================
   // Common Fields (Step 3)
